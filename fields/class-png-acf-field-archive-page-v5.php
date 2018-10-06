@@ -37,14 +37,14 @@ class png_acf_field_archive_page extends acf_field {
 		*  label (string) Multiple words, can include spaces, visible when selecting a field type
 		*/
 
-		$this->label = __('Archive Page', 'TEXTDOMAIN');
+		$this->label = __('Archive Page', 'acf-archive-page');
 
 
 		/*
 		*  category (string) basic | content | choice | relational | jquery | layout | CUSTOM GROUP NAME
 		*/
 
-		$this->category = 'basic';
+		$this->category = 'relational';
 
 
 		/*
@@ -62,7 +62,7 @@ class png_acf_field_archive_page extends acf_field {
 		*/
 
 		$this->l10n = array(
-			'error'	=> __('Error! Please enter a higher value', 'TEXTDOMAIN'),
+			'error'	=> __('Error! Please enter a higher value', 'acf-archive-page'),
 		);
 
 
@@ -105,11 +105,11 @@ class png_acf_field_archive_page extends acf_field {
 		*/
 
 		acf_render_field_setting( $field, array(
-			'label'			=> __('Font Size','TEXTDOMAIN'),
-			'instructions'	=> __('Customise the input font size','TEXTDOMAIN'),
-			'type'			=> 'number',
-			'name'			=> 'font_size',
-			'prepend'		=> 'px',
+			'label'			=> __('Archive Page','acf-archive-page'),
+			'instructions'	=> __('Select an archive page','acf-archive-page'),
+			'type'			=> 'select',
+			'name'			=> 'archive-page',
+			'choices'   => ['Cars', 'Services']
 		));
 
 	}
@@ -133,24 +133,44 @@ class png_acf_field_archive_page extends acf_field {
 
 	function render_field( $field ) {
 
+		$field['type'] = 'select';
+		$field['ui'] = 1;
+		$field['ajax'] = 0;
+		$field['allow_null'] = 0;
+		$field['multiple'] = 0;
+		$field['choices'] = array();
 
 		/*
 		*  Review the data of $field.
 		*  This will show what data is available
 		*/
 
-		echo '<pre>';
-			print_r( $field );
-		echo '</pre>';
+		$postTypes = get_post_types(array(
+			'public' => 1
+		), 'objects');
 
+		$archivePages = array();
+
+		foreach ($postTypes as $postType) {
+			if ($postType->has_archive || $postType->name === 'post') {
+				$field['choices'][$postType->name] = $postType->label;
+				//  array(
+				// 	'name' => $postType->name,
+				// 	'label' => $postType->label,
+				// 	'link' => get_post_type_archive_link($postType->name)
+				// );
+			}
+		}
 
 		/*
 		*  Create a simple text input using the 'font_size' setting.
 		*/
 
+		acf_render_field($field);
+
 		?>
-		<input type="text" name="<?php echo esc_attr($field['name']) ?>" value="<?php echo esc_attr($field['value']) ?>" style="font-size:<?php echo $field['font_size'] ?>px;" />
-		<?php
+<!-- 		<input type="text" name="<?php echo esc_attr($field['name']) ?>" value="<?php echo esc_attr($field['value']) ?>" style="font-size:<?php echo $field['font_size'] ?>px;" />
+ -->		<?php
 	}
 
 
@@ -178,13 +198,13 @@ class png_acf_field_archive_page extends acf_field {
 
 
 		// register & include JS
-		wp_register_script('TEXTDOMAIN', "{$url}assets/js/input.js", array('acf-input'), $version);
-		wp_enqueue_script('TEXTDOMAIN');
+		wp_register_script('acf-archive-page', "{$url}assets/js/input.js", array('acf-input'), $version);
+		wp_enqueue_script('acf-archive-page');
 
 
 		// register & include CSS
-		wp_register_style('TEXTDOMAIN', "{$url}assets/css/input.css", array('acf-input'), $version);
-		wp_enqueue_style('TEXTDOMAIN');
+		wp_register_style('acf-archive-page', "{$url}assets/css/input.css", array('acf-input'), $version);
+		wp_enqueue_style('acf-archive-page');
 
 	}
 
@@ -383,7 +403,7 @@ class png_acf_field_archive_page extends acf_field {
 	*  @return	$value (mixed) the modified value
 	*/
 
-	/*
+
 
 	function format_value( $value, $post_id, $field ) {
 
@@ -395,20 +415,14 @@ class png_acf_field_archive_page extends acf_field {
 		}
 
 
-		// apply setting
-		if( $field['font_size'] > 12 ) {
-
-			// format the value
-			// $value = 'something';
-
-		}
+		$archivePageLink = get_post_type_archive_link($value);
 
 
 		// return
-		return $value;
+		return $archivePageLink;
 	}
 
-	*/
+
 
 
 	/*
@@ -443,7 +457,7 @@ class png_acf_field_archive_page extends acf_field {
 		// Advanced usage
 		if( $value < $field['custom_minimum_setting'] )
 		{
-			$valid = __('The value is too little!','TEXTDOMAIN'),
+			$valid = __('The value is too little!','acf-archive-page'),
 		}
 
 

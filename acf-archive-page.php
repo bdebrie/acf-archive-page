@@ -74,7 +74,7 @@ class png_acf_plugin_archive_page {
 
 
 		// load textdomain
-		load_plugin_textdomain( 'TEXTDOMAIN', false, plugin_basename( dirname( __FILE__ ) ) . '/lang' );
+		load_plugin_textdomain( 'acf-archive-page', false, plugin_basename( dirname( __FILE__ ) ) . '/lang' );
 
 
 		// include
